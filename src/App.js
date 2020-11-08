@@ -60,16 +60,13 @@ const App = () => {
   return (
     <div className="App">
       <h1>Types of Fish</h1>
-      {/* We'll use this later once we have some information in our database
-          to show on the page...... */}  
+      
       {data.map(user =>(
         <p>{user.name} <button onClick={() => handleDelete(user)} >Delete</button></p>)
       )}
       <form>
         <label>Fish Name:</label>
-        {/* We need to keep track of this textbox so we know what to send */}
         <input type="text" onChange={(e) => setInput(e.target.value)}/>
-        {/* ON CLICK - we need to send some information to the API */}
         <button onClick={handleSubmit}>Create</button>
       </form>
     </div>
