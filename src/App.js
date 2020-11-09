@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useForm } from "react-hook-form";
 import "./App.css";
+
 const App = () => {
-  // Store our data/collections here for us to show
   const [data, setData] = useState([]); 
-  // Store the name of the person we are going to create
-  // NOTE: this is the value in the form input
-  const [input, setInput] = useState("");
+  const { register, handleSubmit, error } = useForm();
+
   useEffect(() => {
-    // 1. On component load/mount let's make a call to our API and show some data on the page....
     handleFetch();
   }, []);
+
   const handleFetch = () => {
     fetch('http://localhost:8080').then((res) => {
       return res.json()
@@ -17,19 +17,12 @@ const App = () => {
       setData(res)
     })
   }
-  const handleSubmit = (e) => {
-    // Stop our page submitting
-    e.preventDefault();
-    // *********************************
-    // 3. TODO!! Let's make POST request to our API...
-    // *********************************
+
+  const onSubmit = (data) => {
     const fetchOptions = {
-      // This is a POST Request
       method: 'POST',
-      // We are gonna send JSON
       headers: { 'Content-Type': 'application/json' },
-      // Data goes in the body
-      body: JSON.stringify({"name": input})
+      body: JSON.stringify({"name": data.name, "age": data.age})
     }
     fetch('http://localhost:8080/create', fetchOptions)
       .then(res => res.json())
@@ -41,13 +34,11 @@ const App = () => {
         handleFetch();
       })
   }
+
   const handleDelete = (user) => {
     const fetchOptions = {
-
       method: 'DELETE',
-
       headers: { 'Content-Type': 'application/json' },
-
       body: JSON.stringify(user)
     }
     fetch('http://localhost:8080/delete', fetchOptions)
@@ -59,17 +50,19 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Types of Fish</h1>
-      
-      {data.map(user =>(
-        <p>{user.name} <button onClick={() => handleDelete(user)} >Delete</button></p>)
-      )}
-      <form>
-        <label>Fish Name:</label>
-        <input type="text" onChange={(e) => setInput(e.target.value)}/>
-        <button onClick={handleSubmit}>Create</button>
-      </form>
-    </div>
+    <h1>Types of Fish</h1>
+    
+    {data.map(user =>(
+      <p>Name: {user.name} Age: {user.age} <button onClick={() => handleDelete(user)} >Delete</button></p>)
+    )}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <label>Fish Name:</label>
+      <input type="text" placeholder="name" name="name" ref={register}/>
+      <input type="text" placeholder="age" name="age" ref={register}/>
+      <input type="submit"/>
+    </form>
+  </div>
+
   );
 }
 export default App;
