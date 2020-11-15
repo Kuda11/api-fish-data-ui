@@ -8,14 +8,14 @@ import Form from 'react-bootstrap/Form';
 
 const App = () => {
   const [data, setData] = useState([]);
-  const { register, handleSubmit, error } = useForm();
+  const { register, handleSubmit, error, reset } = useForm();
 
   useEffect(() => {
     handleFetch();
   }, []);
 
   const handleFetch = () => {
-    fetch('http://localhost:8080').then((res) => {
+    fetch('https://us-central1-apifishdata.cloudfunctions.net/app').then((res) => {
       return res.json()
     }).then(res => {
       setData(res)
@@ -26,16 +26,13 @@ const App = () => {
     const fetchOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ "name": data.name, "age": data.age, "img": data.img })
+      body: JSON.stringify({ "name": data.name, "record": data.record, "info": data.info, "img": data.img })
     }
-    fetch('http://localhost:8080/create', fetchOptions)
+    fetch('https://us-central1-apifishdata.cloudfunctions.net/app/create', fetchOptions)
       .then(res => res.json())
       .then(res => {
-
-        console.log("YAY WE GOT OUR RESPONSE BACK....")
-        console.log(res);
-
         handleFetch();
+        reset()
       })
   }
 
@@ -45,29 +42,32 @@ const App = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user)
     }
-    fetch('http://localhost:8080/delete', fetchOptions)
+    fetch('https://us-central1-apifishdata.cloudfunctions.net/app/delete', fetchOptions)
       .then(() => {
-        console.log('succssfully deleted' + user.name)
         handleFetch();
       })
   }
 
   return (
     <div className="App">
-      <h1>Types of Fish</h1>
+      <h1>TYPES OF FISH IN THE UK:</h1>
       <section className="form-container">
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group >
-            <Form.Label>Name</Form.Label>
-            <Form.Control type="text" placeholder="Name" name="name" ref={register} />
+            <Form.Label>Name:</Form.Label>
+            <Form.Control type="text" placeholder="Carp" name="name" ref={register} />
           </Form.Group>
           <Form.Group >
-            <Form.Label>Age</Form.Label>
-            <Form.Control type="text" placeholder="Age" name="age" ref={register} />
+            <Form.Label>British Record:</Form.Label>
+            <Form.Control type="text" placeholder="67lb 8oz" name="record" ref={register} />
           </Form.Group>
           <Form.Group >
-            <Form.Label>Img</Form.Label>
-            <Form.Control type="text" placeholder="Password" name="img" ref={register} />
+            <Form.Label>Info:</Form.Label>
+            <Form.Control type="text" name="info" ref={register} />
+          </Form.Group>
+          <Form.Group >
+            <Form.Label>Image URL:</Form.Label>
+            <Form.Control type="text" placeholder="https://image.com" name="img" ref={register} />
           </Form.Group>
           <Button variant="primary" type="submit">
             Submit
@@ -75,23 +75,58 @@ const App = () => {
         </Form>
       </section>
 
-      {data.map(user => (
-        <p>Name: {user.name} Age: {user.age} img: <img src={user.img} /> <button onClick={() => handleDelete(user)} >Delete</button></p>)
-      )}
-
       <section className="flex-contaoner">
-        <Card style={{ width: '18rem' }}>
-          <Card.Img variant="top" src="holder.js/100px180" />
+        <Card className="item-cards" style={{ width: '300px' }}>
+          <Card.Img variant="top" src='https://canalrivertrust.org.uk/refresh/media/original/21055.jpg?v=92e60b' />
           <Card.Body>
-            <Card.Title>Card Title</Card.Title>
+            <Card.Title>Pike</Card.Title>
             <Card.Text>
-              Some quick example text to build on the card title and make up the bulk of
-              the card's content.
+              British record: 46lb 13oz (British record committee 2015)
             </Card.Text>
-            <Button variant="primary">Go somewhere</Button>
+            <Card.Text>
+              While fierce looking, the pike is a very fragile fish and the upmost of care must be taken when handling them.
+            </Card.Text>
+            <Button variant="primary" variant="secondary" disabled>Delete</Button>
           </Card.Body>
         </Card>
-
+        <Card className="item-cards" style={{ width: '300px' }}>
+          <Card.Img variant="top" src="https://badangling.com/wp-content/uploads/2018/02/Common-Carp-Underwater.jpg" />
+          <Card.Body>
+            <Card.Title>Carp</Card.Title>
+            <Card.Text>
+              British record: 67lb 8oz (British record committee 2015)
+            </Card.Text>
+            <Card.Text>
+              Canal fishing for carp is a challenge, but potentially highly rewarding.
+            </Card.Text>
+            <Button variant="primary" variant="secondary" disabled>Delete</Button>
+          </Card.Body>
+        </Card>
+        <Card className="item-cards" style={{ width: '300px' }}>
+          <Card.Img variant="top" src="https://canalrivertrust.org.uk/refresh/media/original/41353.jpg?v=573c0d" />
+          <Card.Body>
+            <Card.Title>Roach</Card.Title>
+            <Card.Text>
+              British record: 4lb 4oz (British record committee 2015)
+            </Card.Text>
+            <Card.Text>
+              While you will catch some roach by fishing close to the towpath bank, you will have more success from the boat channel or far bank area.
+            </Card.Text>
+            <Button variant="primary" variant="secondary" disabled>Delete</Button>
+          </Card.Body>
+        </Card>
+        {data.map(user => (
+          <Card className="item-cards" style={{ width: '300px' }}>
+            <Card.Img variant="top" src={user.img} />
+            <Card.Body>
+              <Card.Title>{user.name}</Card.Title>
+              <Card.Text>British record: {user.record}</Card.Text>
+              <Card.Text>{user.info}</Card.Text>
+              <Button variant="primary" onClick={() => handleDelete(user)}>Delete</Button>
+            </Card.Body>
+          </Card>
+        )
+        )}
       </section>
 
     </div>

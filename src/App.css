@@ -1,13 +1,27 @@
 .App {
   text-align: center;
-  margin: 10px 100px;
+  margin: 10px 50px;
 }
-.form-container{
+
+.form-container {
   width: 300px;
   margin: auto;
   
 }
 .flex-contaoner {
   display: flex;
-
+  flex-wrap: wrap;
+  flex: 400px;
+  justify-content: center;
+}
+.item-cards {
+  margin: 50px 15px;
+}
+@media only screen and (max-width: 600px) {
+  .App {
+    margin: 10px 10px;
+  }
+  .item-cards {
+    margin: 10px 5px;
+  }
 }
